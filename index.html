@@ -7,11 +7,10 @@
     <title>Botões Centralizados</title>
     <style>
         @font-face {
-            font-family: 'a';
-            src: url('Roman_New_Times.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-        }
+    font-family: 'a';
+    src: url('fonts/RomanNewTimes.woff2') format('woff2'),
+         url('fonts/RomanNewTimes.woff') format('woff');
+}
 
         body {
             margin: 0;
@@ -60,9 +59,7 @@
         }
 
         button {
-            font-family: 'a'; /* Using the local font */
-            font-weight: 400;
-            font-style: normal;
+            font-family: 'a',cursive; 
             background-color: #3a1445;
             border: none;
             color: white;
@@ -84,12 +81,18 @@
 
 <body>
     <div class="overlay"></div>
+    
     <div class="container">
-        <button>Clássico</button>
+        <p style="font-family: 'a'; font-size: 70px; margin-bottom: 0px;">
+            Ordle
+        </p>
+        <!-- Botões -->
+        <button>Classico</button>
         <button>Frase</button>
         <button>Emoji</button>
         <button>Monstro</button>
     </div>
 </body>
+
 
 </html>

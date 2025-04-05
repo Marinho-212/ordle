@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Roman New Times';
+    src: url('RomanNewTimes.woff2') format('woff2'),
+        url('RomanNewTimes.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
