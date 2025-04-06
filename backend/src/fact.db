@@ -1,0 +1,2 @@
+created(1743886671.436921).
+assert(fact(some(fact),some(other,fact))).
