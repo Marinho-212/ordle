@@ -1,10 +1,27 @@
 :- dynamic(daily_character/12).
 :- use_module(library(random)).
 :- use_module(library(persistency)).
+use_module(library(dialect/sicstus/system)).
+
 
 :- persistent
     daily_entity(id: integer, type: string),
-    black_list(list: list(integer), type: string).
+    black_list(list: list(integer), type: string),
+    current_time(timestamp:int).
+
+    check_time_valid :-
+        (current_time(PreviousTime) ->
+            now(Now),
+            Difference is Now - PreviousTime,
+            (Difference >= 86400 ->
+                retractall_current_time(_),
+                assert_current_time(Now)
+            ;
+                fail)
+        ;
+            now(Now),
+            assert_current_time(Now)).
+
 
 is_in_black_list([], _) :- fail.
 is_in_black_list([Head | Tail], X) :-
@@ -34,40 +51,47 @@ update_and_store_blacklist(Id, Type) :-
     assert_black_list(NewList, Type).
 
 get_classic :-
-    random_between(1, 181, Id),
-    (black_list(List, "classic") -> true ; List = []),
+    (check_time_valid ->
+        random_between(1, 181, Id),
+        (black_list(List, "classic") -> true ; List = []),
 
-    (is_in_black_list(List, Id) ->
-        get_classic;
-        update_and_store_blacklist(Id, "classic"),
-        assert_daily_entity(Id, "classic")),!.
+        (is_in_black_list(List, Id) ->
+            get_classic;
+            update_and_store_blacklist(Id, "classic"),
+            assert_daily_entity(Id, "classic"))
+    ; true),!.
 
 get_quote :-
-    random_between(1, 181, Id),
-    (black_list(List, "quote") -> true ; List = []),
+        (check_time_valid ->
+            random_between(1, 181, Id),
+            (black_list(List, "quote") -> true ; List = []),
 
-    (not_valide_id(Id, "quote") ; is_in_black_list(List, Id) ->
-        get_quote;
-        update_and_store_blacklist(Id, "quote"),
-        assert_daily_entity(Id, "quote")),!.
-
+            (not_valide_id(Id, "quote") ; is_in_black_list(List, Id) ->
+                get_quote;
+                update_and_store_blacklist(Id, "quote"),
+                assert_daily_entity(Id, "quote"))
+        ; true), !.
 
 get_emojis :-
-    random_between(1, 181, Id),
-    (black_list(List, "emojis") -> true ; List = []),
+        (check_time_valid ->
+            random_between(1, 181, Id),
+            (black_list(List, "emojis") -> true ; List = []),
 
-    (not_valide_id(Id, "emojis") ; is_in_black_list(List, Id) ->
-        get_emojis;
-        update_and_store_blacklist(Id, "emojis"),
-        assert_daily_entity(Id, "emojis")),!.
+            (not_valide_id(Id, "emojis") ; is_in_black_list(List, Id) ->
+                get_emojis;
+                update_and_store_blacklist(Id, "emojis"),
+                assert_daily_entity(Id, "emojis"))
+        ; true), !.
 
 get_monster :-
-    random_between(1, 73, Id),
-    (black_list(List, "monster") -> true ; List = []),
-    (is_in_black_list(List, Id) ->
-        get_monster;
-        update_and_store_blacklist(Id, "monster"),
-        assert_daily_entity(Id, "monster")),!.
+        (check_time_valid ->
+            random_between(1, 73, Id),
+            (black_list(List, "monster") -> true ; List = []),
+            (is_in_black_list(List, Id) ->
+                get_monster;
+                update_and_store_blacklist(Id, "monster"),
+                assert_daily_entity(Id, "monster"))
+        ; true), !.
 
 initializate_entitys :-
     (black_list(_, "classic") -> true ; assert_black_list([], "classic")),
