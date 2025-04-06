@@ -23,8 +23,8 @@ not_valide_id(Id, Type) :-
         Quote == ""
     ;
      Type == "emojis" ->
-        personagem(Id, _, _, _, _, _, _, _, _, Emojis, _, _),
-        Emojis == ""
+        personagem(Id, _, _, _, _, _, _, _, _, emojis, _, _),
+        emojis == ""
     ).
 
 update_and_store_blacklist(Id, Type) :-
@@ -36,47 +36,45 @@ update_and_store_blacklist(Id, Type) :-
 get_classic :-
     random_between(1, 181, Id),
     (black_list(List, "classic") -> true ; List = []),
+
     (is_in_black_list(List, Id) ->
+        get_classic;
         update_and_store_blacklist(Id, "classic"),
-        get_classic
-    ;
-        assert_daily_entity(Id, "classic")
-    ).
+        assert_daily_entity(Id, "classic")),!.
 
 get_quote :-
     random_between(1, 181, Id),
     (black_list(List, "quote") -> true ; List = []),
-    (not_valide_id(Id, "quote") ; is_in_black_list(List, Id)) ->
-        update_and_store_blacklist(Id, "quote"),
-        get_quote
-    ;
-        assert_daily_entity(Id, "quote").
 
-get_emoji :-
+    (not_valide_id(Id, "quote") ; is_in_black_list(List, Id) ->
+        get_quote;
+        update_and_store_blacklist(Id, "quote"),
+        assert_daily_entity(Id, "quote")),!.
+
+
+get_emojis :-
     random_between(1, 181, Id),
-    (black_list(List, "emoji") -> true ; List = []),
-    (not_valide_id(Id, "emojis") ; is_in_black_list(List, Id)) ->
-        update_and_store_blacklist(Id, "emoji"),
-        get_emoji
-    ;
-        assert_daily_entity(Id, "emoji").
+    (black_list(List, "emojis") -> true ; List = []),
+
+    (not_valide_id(Id, "emojis") ; is_in_black_list(List, Id) ->
+        get_emojis;
+        update_and_store_blacklist(Id, "emojis"),
+        assert_daily_entity(Id, "emojis")),!.
 
 get_monster :-
     random_between(1, 73, Id),
     (black_list(List, "monster") -> true ; List = []),
     (is_in_black_list(List, Id) ->
+        get_monster;
         update_and_store_blacklist(Id, "monster"),
-        get_monster
-    ;
-        assert_daily_entity(Id, "monster")
-    ).
+        assert_daily_entity(Id, "monster")),!.
 
 initializate_entitys :-
     (black_list(_, "classic") -> true ; assert_black_list([], "classic")),
     (black_list(_, "quote")   -> true ; assert_black_list([], "quote")),
-    (black_list(_, "emoji")   -> true ; assert_black_list([], "emoji")),
+    (black_list(_, "emojis")   -> true ; assert_black_list([], "emojis")),
     (black_list(_, "monster") -> true ; assert_black_list([], "monster")),
     get_classic,
     get_quote,
-    get_emoji,
-    get_monster.
+    get_emojis,
+    get_monster,!.
