@@ -1,4 +1,5 @@
 :- [carrega_dados].
+:- [set_daily].
 :- use_module(json_to_facts, [personagem/12, monstro/3, carregar_json/4]).
 :- use_module(library(persistency)).
 :- initialization(main).

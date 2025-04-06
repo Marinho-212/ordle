@@ -1,2 +1,6 @@
-created(1743886671.436921).
-assert(fact(some(fact),some(other,fact))).
+created(1743961794.86584).
+assert(black_list([],"classic")).
+assert(black_list([],"quote")).
+assert(black_list([],"emoji")).
+assert(black_list([],"monster")).
+assert(daily_entity(51,"classic")).
