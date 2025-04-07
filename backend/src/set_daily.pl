@@ -3,7 +3,6 @@
 :- use_module(library(persistency)).
 use_module(library(dialect/sicstus/system)).
 
-
 :- persistent
     daily_entity(id: integer, type: string),
     black_list(list: list(integer), type: string),
@@ -34,6 +33,12 @@ update_black_list(List, Id, NewList) :-
          append(Tail, [Id], NewList));
         append(List, [Id], NewList)).
 
+update_and_store_blacklist(Id, Type) :-
+    (black_list(List, Type) -> true ; List = []),
+    update_black_list(List, Id, NewList),
+    retractall_black_list(_, Type),
+    assert_black_list(NewList, Type).
+
 not_valide_id(Id, Type) :-
     (Type == "quote" ->
         personagem(Id, _, _, _, _, _, _, _, _, _, _, Quote),
@@ -43,12 +48,6 @@ not_valide_id(Id, Type) :-
         personagem(Id, _, _, _, _, _, _, _, _, emojis, _, _),
         emojis == ""
     ).
-
-update_and_store_blacklist(Id, Type) :-
-    (black_list(List, Type) -> true ; List = []),
-    update_black_list(List, Id, NewList),
-    retractall_black_list(_, Type),
-    assert_black_list(NewList, Type).
 
 get_classic :-
     (check_time_valid ->
