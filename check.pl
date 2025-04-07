@@ -1,5 +1,5 @@
 check_classico(id_day,id_try):-
-id_day =.= id_try -> return_classico_correct();
+id_day =.= id_try -> return_classico_correct(_);
 check_classico_name(id_day,id_try,_),
 check_classico_age(id_day,id_try,_),
 check_classico_status(id_day,id_try,_),
@@ -9,7 +9,8 @@ check_classico_actor(id_day,id_try,_),
 check_classico_affinity(id_day,id_try,_),
 check_classico_gender(id_day,id_try,_).
 
-return_classico_correct():-
+return_classico_correct(saida_classico):-
+saida_classico = 1.
 
 check_classico_name(id_day,id_try,saida_name):-
 daily_character(id_day,name_day,_,_,_,_,_,_,_,_,_,_),
