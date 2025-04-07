@@ -4,24 +4,18 @@
 :- use_module(library(persistency)).
 :- use_module(library(dialect/sicstus/system)).
 
-:- persistent
-    daily_entity(id: integer, type: string),
-    black_list(list: list(integer), type: string),
-    current_time(timestamp:integer).
-
-    check_time_valid :-
-        (current_time(PreviousTime) ->
-            now(Now),
-            Difference is Now - PreviousTime,
-            (Difference >= 86400 ->
-                retractall_current_time(_),
-                assert_current_time(Now)
-            ;
-                fail)
+check_time_valid(Type) :-
+    (current_time(PreviousTime, Type) ->
+        now(Now),
+        Difference is Now - PreviousTime,
+        (Difference >= 86400 ->
+            retractall_current_time(_),
+            assert_current_time(Now, Type)
         ;
-            now(Now),
-            assert_current_time(Now)).
-
+            fail)
+    ;
+        now(Now),
+        assert_current_time(Now,Type)).
 
 is_in_black_list([], _) :- fail.
 is_in_black_list([Head | Tail], X) :-
@@ -51,12 +45,12 @@ not_valide_id(Id, Type) :-
     ).
 
 get_mode(Type, LowerBound, UpperBound):-
-    (check_time_valid ->
+    (check_time_valid(Type) ->
         random_between(LowerBound, UpperBound, Id),
         (black_list(List, Type) -> true ; List = []),
 
-        (is_in_black_list(List, Id) ->
-            get_classic;
+        (not_valide_id(Id, Type); is_in_black_list(List, Id) ->
+            get_mode(Type,LowerBound, UpperBound);
             update_and_store_blacklist(Id, Type),
             assert_daily_entity(Id, Type))
-    ; true),!.
+    ; true).

@@ -1,7 +1,11 @@
-:- dynamic(daily_character/12).
 :- use_module(rules_daily, [get_mode/3]).
+:- dynamic(daily_character/12).
 :- use_module(library(persistency)).
-
+:- persistent
+    daily_entity(id: integer, type: string),
+    black_list(list: list(integer), type: string),
+    current_time(timestamp:integer, type:string).
+    
 get_classic :-
     get_mode("classic",1,181).
 
