@@ -68,17 +68,20 @@ check_classico_gender(IdDay,IdTry,Saida):-
     GenderDay = GenderTry -> Saida = 1;
     Saida = -1.
 
-check_monstro(IdTry,Saida):-
+check_monstro(IdTry,Saida,Dic):-
     daily_entity(IdDay,"monster"),
-    (IdDay = IdTry -> Saida  is 1;
-    Saida is -1).
+    (IdDay = IdTry -> Saida = 1;
+    Saida = -1),
+    Dic = [mosntro: Saida].
 
-check_emojis(IdTry,Saida):-
+check_emojis(IdTry,Saida,Dic):-
     daily_entity(IdDay,"emojis"),
-    (IdDay = IdTry -> Saida  is 1;
-    Saida is -1).
+    (IdDay = IdTry -> Saida = 1;
+    Saida is -1),
+    Dic = [emoji: Saida]
 
-check_falas(IdTry,Saida):-
+check_falas(IdTry,Saida,Dic):-
     daily_entity(IdDay,"quote"),
-   ( IdDay = IdTry -> Saida  is 1;
-    Saida is -1).
+   (IdDay = IdTry -> Saida = 1;
+    Saida is -1),
+    Dic = [fala: Saida].
