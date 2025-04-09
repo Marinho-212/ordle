@@ -4,17 +4,17 @@ check_classico(IdTry, Dic):-
     check_classico_name(IdDay,IdTry,NameResult),
     check_classico_age(IdDay,IdTry, AgeResult),
     check_classico_association(IdDay,IdTry,AssociationResult),
-    % check_classico_fstap(IdDay,IdTry,FstapResult),
-    % check_classico_actor(IdDay,IdTry,ActorResult),
-    % check_classico_affinity(IdDay,IdTry,AffinityResult),
-    % check_classico_gender(IdDay,IdTry,GenderResult),
-    Dic = _{name: NameResult, 
-        	age: AgeResult,
-            association: AssociationResult
-        %    fstap: FstapResult, 
-        %    actor: ActorResult, 
-        %    affinity: AffinityResult, 
-        %    gender: GenderResult
+    check_classico_fstap(IdDay,IdTry,FstapResult),
+    check_classico_actor(IdDay,IdTry,ActorResult),
+    check_classico_affinity(IdDay,IdTry,AffinityResult),
+    check_classico_gender(IdDay,IdTry,GenderResult),
+    Dic = _{fstap: FstapResult, 
+            actor: ActorResult, 
+            association: AssociationResult,
+            affinity: AffinityResult,
+            gender: GenderResult,
+            age: AgeResult,
+            name: NameResult 
            }).
 
 check_classico_name(IdDay,IdTry,Saida):-
@@ -30,13 +30,13 @@ check_classico_age(IdDay, IdTry, Saida) :-
       Saida = 10)).
 
 check_classico_association(IdDay,IdTry, Saida):-
-    personagem(IdDay,_,_,_,associationDay,_,_,_,_,_,_,_),
-    personagem(IdTry,_,_,_,associationTry,_,_,_,_,_,_,_),
-    split_string(associationDay, ", ", "", listaDay),
-    split_string(associationTry, ", ", "", listaTry),
-    sort(listaDay, sortedDay),
-    sort(listaTry, sortedTry),
-    verifica(sortedDay,sortedTry,Saida).
+    personagem(IdDay,_,_,_,AssociationDay,_,_,_,_,_,_,_),
+    personagem(IdTry,_,_,_,AssociationTry,_,_,_,_,_,_,_),
+    split_string(AssociationDay, ", ", "", ListaDay),
+    split_string(AssociationTry, ", ", "", ListaTry),
+    sort(ListaDay, SortedDay),
+    sort(ListaTry, SortedTry),
+    verifica(SortedDay,SortedTry,Saida).
 
 verifica(List1, List2, Result):-
     (List1 = List2 -> Result = 1;
@@ -46,21 +46,33 @@ verifica(List1, List2, Result):-
 common_element([Head|_], List2) :- member(Head, List2), !.
 common_element([_|Tail], List2) :- common_element(Tail, List2).
 
+fstap_comp("Iniciacao",1).
+fstap_comp("O Segredo na Floresta",2).
+fstap_comp("Desconjuracao",3).
+fstap_comp("Calamidade",4).
+fstap_comp("O Segredo na Ilha",5).
+fstap_comp("Sinais do Outro Lado",6).
+fstap_comp("Quarentena",7).
+fstap_comp("Natal Macabro",8).
+fstap_comp("Enigma do Medo",9).
 
 check_classico_fstap(IdDay,IdTry,Saida):-
-    personagem(IdDay,_,_,_,_,fstapDay,_,_,_,_,_,_),
-    personagem(IdTry,_,_,_,_,fstapTry,_,_,_,_,_,_),
-    fstapDay = fstapTry -> Saida = 1;
-    Saida = -1.
+    personagem(IdDay,_,_,_,_,FstapDay,_,_,_,_,_,_),
+    personagem(IdTry,_,_,_,_,FstapTry,_,_,_,_,_,_),
+    fstap_comp(FstapDay,NumDay),
+    fstap_comp(FstapTry,NumTry),
+    Dif is NumDay - NumTry,
+   ( Dif == 0 -> Saida = 1;
+    (Dif < 0 -> Saida = -10; Saida = 10)).
 
 check_classico_actor(IdDay,IdTry, Saida):-
-    personagem(IdDay,_,_,_,_,_,actorDay,_,_,_,_,_),
-    personagem(IdTry,_,_,_,_,_,actorTry,_,_,_,_,_),
-    split_string(actorDay, ", ", "", listaDay),
-    split_string(actorTry, ", ", "", listaTry),
-    sort(listaDay, sortedDay),
-    sort(listaTry, sortedTry),
-    verifica(sortedDay,sortedTry,Saida).
+    personagem(IdDay,_,_,_,_,_,ActorDay,_,_,_,_,_),
+    personagem(IdTry,_,_,_,_,_,ActorTry,_,_,_,_,_),
+    split_string(ActorDay, ", ", "", ListaDay),
+    split_string(ActorTry, ", ", "", ListaTry),
+    sort(ListaDay, SortedDay),
+    sort(ListaTry, SortedTry),
+    verifica(SortedDay,SortedTry,Saida).
 
 check_classico_affinity(IdDay,IdTry,Saida):-
     personagem(IdDay,_,_,_,_,_,_,AffinityDay,_,_,_,_),

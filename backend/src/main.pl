@@ -14,13 +14,10 @@
 :- http_handler(root(get_emojis), get_emojis_handler, []).
 :- http_handler(root(get_monster), get_monster_handler, []).
 
-
 get_classic_handler(Request) :-
     http_parameters(Request, [id(ID, [integer])]),
     check_classico(ID, Dic),
-    % json:json_write_dict(Stream, Dic, []),
     reply_json(Dic).
-
 
 main :-
     absolute_file_name('fact.db', File, [access(write)]),
