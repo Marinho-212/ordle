@@ -54,3 +54,10 @@ get_mode(Type, LowerBound, UpperBound):-
             update_and_store_blacklist(Id, Type),
             assert_daily_entity(Id, Type))
     ; true).
+
+get_all(List):-
+    findall(
+        _{id: Id, nome: Nome},
+        personagem(Id, Nome,_,_,_,_,_,_,_,_,_,_),
+        List
+    ).

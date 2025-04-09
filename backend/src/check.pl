@@ -1,7 +1,6 @@
 check_classico(IdTry, Dic):-
     daily_entity(IdDay,"classic"),
-   ( IdDay = IdTry -> Dic = [name: 1, age: 1, association: 1, fstap: 1, affinity: 1, gender: 1];
-    check_classico_name(IdDay,IdTry,NameResult),
+   ( check_classico_name(IdDay,IdTry,NameResult),
     check_classico_age(IdDay,IdTry, AgeResult),
     check_classico_association(IdDay,IdTry,AssociationResult),
     check_classico_fstap(IdDay,IdTry,FstapResult),

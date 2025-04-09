@@ -1,22 +1,37 @@
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_open)).
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_json)).
+:- use_module(library(http/http_parameters)).
+:- use_module(library(http/http_cors)).
 
-:- http_handler(root(.), serve_html, []).
+:- http_handler(root(get_classic), get_classic_handler, [method(get), cors([])]).
+:- http_handler(root(get_quote), get_quote_handler, [method(get), cors([])]).
+:- http_handler(root(get_emojis), get_emojis_handler, [method(get), cors([])]).
+:- http_handler(root(get_monster), get_monster_handler, [method(get), cors([])]).
 
-% Função que serve o arquivo HTML
-serve_html(Request) :-
-    File = 'ordle/index.html', 
-    catch(
-        open(File, read, Stream),
-        _,
-        (   format('Content-type: text/plain~n~n'),
-            format('Erro ao carregar o arquivo HTML.~n')
-        )
-    ),
-    format('Content-type: text/html~n~n'),
-    copy_stream_data(Stream, current_output),
-    close(Stream).
+get_classic_handler(Request) :-
+    cors_enable,
+    http_parameters(Request, [id(ID, [integer])]),
+    check_classico(ID, Dic),
+    reply_json(Dic).
+
+get_monster_handler(Request) :-
+    http_parameters(Request, [id(ID, [integer])]),
+    check_monster(ID, Dic),
+    reply_json(Dic).
+
+get_quote_handler(Request) :-
+    http_parameters(Request, [id(ID, [integer])]),
+    check_quote(ID, Dic),
+    reply_json(Dic).
+
+get_emojis_handler(Request) :-
+    http_parameters(Request, [id(ID, [integer])]),
+    check_emojis(ID, Dic),
+    reply_json(Dic).
 
 start_server :-
     http_server([port(8080)]).
