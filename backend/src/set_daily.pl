@@ -1,6 +1,8 @@
 :- use_module(rules_daily, [get_mode/3]).
 :- dynamic(daily_character/12).
 :- use_module(library(persistency)).
+:- use_module(library(dialect/sicstus/system)).
+
 :- persistent
     daily_entity(id: integer, type: string),
     black_list(list: list(integer), type: string),
