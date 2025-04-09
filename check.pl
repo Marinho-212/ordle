@@ -78,7 +78,7 @@ check_emojis(IdTry,Saida,Dic):-
     daily_entity(IdDay,"emojis"),
     (IdDay = IdTry -> Saida = 1;
     Saida is -1),
-    Dic = [emoji: Saida]
+    Dic = [emoji: Saida].
 
 check_falas(IdTry,Saida,Dic):-
     daily_entity(IdDay,"quote"),
