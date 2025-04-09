@@ -1,4 +1,4 @@
-:- module(rules_daily, [get_mode/3]).
+:- module(rules_daily, [get_mode/3, get_all/1, get_one/2]).
 :- dynamic(daily_character/12).
 :- use_module(library(random)).
 :- use_module(library(persistency)).
@@ -61,3 +61,6 @@ get_all(List):-
         personagem(Id, Nome,_,_,_,_,_,_,_,_,_,_),
         List
     ).
+get_one(Id,Dic):-
+    personagem(Id, Nome,Idade,_,Assoc,First,Ator,Aff,Genero,_,_,_),
+    Dic = _{id: Id, nome: Nome, age: Idade, gender: Genero, actor: Ator, assoc: Assoc, aff: Aff, first: First}.
