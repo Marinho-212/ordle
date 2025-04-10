@@ -27,7 +27,7 @@
       background-color: black;
       color: white;
       position: relative;
-      overflow-y: auto;
+      overflow: hidden;
       font-family: 'a', cursive;
       font-size: 20px;
     }
@@ -60,13 +60,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px;
+      gap: 20px;
       text-align: center;
       z-index: 3;
       position: relative;
-      margin-top: 50px;
+      margin-top: 30px;
       width: 90%;
       max-width: 800px;
+      height: 90vh;
     }
 
     h1 {
@@ -79,6 +80,13 @@
       font-size: 24px;
       margin: 10px 0;
       max-width: 700px;
+      padding: 20px;
+      background-color: rgba(74, 0, 114, 0.7);
+      border-radius: 10px;
+      border: 2px solid #7e2cb8;
+      box-shadow: 0 0 15px rgba(126, 44, 184, 0.5);
+      margin-top: -10px;
+      margin-bottom: 20px;
     }
 
     .search-bar {
@@ -88,6 +96,7 @@
       flex-direction: column;
       align-items: center;
       gap: 15px;
+      margin-bottom: 15px;
     }
 
     select {
@@ -117,12 +126,60 @@
       background-color: #7e2cb8;
     }
 
+    .results-container {
+      width: 100%;
+      max-width: 500px;
+      max-height: 50vh;
+      overflow-y: auto;
+      padding: 5px;
+      scrollbar-width: thin;
+      scrollbar-color: #7e2cb8 #3a1445;
+    }
+
+    .results-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .results-container::-webkit-scrollbar-track {
+      background: #3a1445;
+      border-radius: 10px;
+    }
+
+    .results-container::-webkit-scrollbar-thumb {
+      background-color: #7e2cb8;
+      border-radius: 10px;
+    }
+
     .acerto {
-      background-color: green;
+      background-color: #2e7d32; 
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 20px;
+      margin: 5px 0;
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      display: block;
+      box-sizing: border-box;
+      border: 2px solid #1b5e20;
+      box-shadow: 0 0 8px rgba(46, 125, 50, 0.5);
     }
 
     .erro {
-      background-color: red;
+      background-color: #c62828; 
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 20px;
+      margin: 5px 0;
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      display: block;
+      box-sizing: border-box;
+      border: 2px solid #b71c1c;
+      box-shadow: 0 0 8px rgba(198, 40, 40, 0.5);
     }
   </style>
 </head>
@@ -140,6 +197,8 @@
       </select>
       <button onclick="tentar()">Tentar</button>
     </div>
+
+    <div class="results-container" id="results-container"></div>
   </div>
 
   <script>
@@ -159,6 +218,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const select = document.getElementById('character-select');
       const quoteElement = document.getElementById('correct-quote');
+      const resultsContainer = document.getElementById('results-container');
 
       try {
         const correct_emoji_res = await fetch('http://localhost:8080/get_correct_emoji');
@@ -166,10 +226,8 @@
         const correctEmojiData = await correct_emoji_res.json();
         correctEmoji = correctEmojiData.emoji;
 
-
         tentativas = 1;
         revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
-
 
         const response = await fetch('http://localhost:8080/get_all');
         if (!response.ok) throw new Error('Erro ao buscar personagens');
@@ -198,6 +256,8 @@
     async function tentar() {
       const select = document.getElementById('character-select');
       const selectedId = select.value;
+      const resultsContainer = document.getElementById('results-container');
+      const quoteElement = document.getElementById('correct-quote');
 
       if (!selectedId) {
         alert('Por favor, selecione um personagem!');
@@ -212,14 +272,15 @@
         const charData = await charResponse.json();
         const resultData = await checkResponse.json();
 
-        const container = document.querySelector('.container');
         const div = document.createElement('div');
         div.className = getClasse(resultData.emoji);
         div.textContent = charData.nome;
-        container.appendChild(div);
+        
+        resultsContainer.insertBefore(div, resultsContainer.firstChild);
+
+        resultsContainer.scrollTo(0, 0);
 
         tentativas++;
-        const quoteElement = document.getElementById('correct-quote');
         revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
 
       } catch (error) {

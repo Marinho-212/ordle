@@ -48,7 +48,7 @@ get_quote_handler(Request) :-
 get_emojis_handler(Request) :-
     cors_enable,
     http_parameters(Request, [id(ID, [integer])]),
-    check_emojis(ID, Dic),
+    check_emojis(ID, _,Dic),
     reply_json(Dic).
 
 get_all_handler(_Request):-

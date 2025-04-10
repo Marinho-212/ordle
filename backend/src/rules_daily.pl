@@ -63,5 +63,5 @@ get_all(List):-
     ).
 
 get_one(Id,Dic):-
-    personagem(Id, Nome,Idade,_,Assoc,First,Ator,Aff,Genero,_,_,Quote),
-    Dic = _{id: Id, nome: Nome, age: Idade, gender: Genero, actor: Ator, assoc: Assoc, aff: Aff, first: First, quote: Quote}.
+    personagem(Id, Nome,Idade,_,Assoc,First,Ator,Aff,Genero,Emoji,_,Quote),
+    Dic = _{id: Id, nome: Nome, age: Idade, gender: Genero, actor: Ator, assoc: Assoc, aff: Aff, first: First, emoji: Emoji,quote: Quote}.

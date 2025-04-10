@@ -12,6 +12,7 @@
 :- http_handler(root(quote), serve_frase, []).
 :- http_handler(root(emoji), serve_emoji, []).
 
+
 serve_html(_Request) :-
     File = 'index.html',
     catch(
