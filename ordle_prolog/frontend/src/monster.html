@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR" spellcheck="false">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -155,7 +154,7 @@
     }
 
     .acerto {
-      background-color: #2e7d32; 
+      background-color: #2e7d32;
       color: white;
       padding: 8px 15px;
       border-radius: 8px;
@@ -171,7 +170,7 @@
     }
 
     .erro {
-      background-color: #c62828; 
+      background-color: #c62828;
       color: white;
       padding: 8px 15px;
       border-radius: 8px;
@@ -187,81 +186,52 @@
     }
   </style>
 </head>
-
 <body>
   <div class="overlay"></div>
-
   <div class="container">
     <h1>Ordle</h1>
-    
     <div class="monster-image-container">
       <img id="monster-image" class="monster-image" src="" alt="Monstro Oculto">
     </div>
-
     <div class="search-bar">
       <select id="monster-select">
         <option disabled selected>Carregando monstros...</option>
       </select>
       <button onclick="tentar()">Tentar</button>
     </div>
-
     <div class="results-container" id="results-container"></div>
   </div>
-
   <script>
     let correctMonsterData = null;
     let attempts = 0;
     const maxAttempts = 70;
-    const IMAGES_BASE_PATH = './monsters_images/'; // Added ./ to ensure correct path
+    const IMAGES_BASE_PATH = './monsters_images/';
 
     document.addEventListener('DOMContentLoaded', async () => {
       const select = document.getElementById('monster-select');
       const monsterImage = document.getElementById('monster-image');
-      
+
       try {
-        // Get correct monster data
         const correctMonsterRes = await fetch('http://localhost:8080/get_correct_monster');
         if (!correctMonsterRes.ok) throw new Error('Failed to get correct monster');
-        
+
         correctMonsterData = await correctMonsterRes.json();
-        console.log('Correct monster data:', correctMonsterData); // Debugging
-        console.log('Attempting to load:', imagePath);
+        const imagePath = `${IMAGES_BASE_PATH}${correctMonsterData.image}`;
 
-        const img = new Image();
-        img.onload = () => console.log('Image exists!');
-        img.onerror = () => console.log('Image missing!');
-        img.src = imagePath;
-        // Set the image source
-        if (correctMonsterData.image) {
-          const imagePath = `${IMAGES_BASE_PATH}${correctMonsterData.image}`;
-          console.log('Trying to load image from:', imagePath); // Debugging
-          
-    
-          
-          testImage.onerror = () => {
-            console.error('Failed to load image:', imagePath);
-            monsterImage.src = `${IMAGES_BASE_PATH}default.jpg`;
-            monsterImage.style.display = 'block';
-          };
-        } else {
-          console.warn('No image property in monster data');
-          monsterImage.src = `${IMAGES_BASE_PATH}default.jpg`;
-        }
-
-        // Create new image to test loading
         const testImage = new Image();
-          testImage.src = imagePath;
-          
-          testImage.onload = () => {
-            console.log('Image loaded successfully');
-            monsterImage.src = imagePath;
-            monsterImage.style.display = 'block';
-          };
-        
-        // Load all monsters for dropdown
+        testImage.src = imagePath;
+        testImage.onload = () => {
+          monsterImage.src = imagePath;
+          monsterImage.style.display = 'block';
+        };
+        testImage.onerror = () => {
+          monsterImage.src = `${IMAGES_BASE_PATH}default.jpg`;
+          monsterImage.style.display = 'block';
+        };
+
         const response = await fetch('http://localhost:8080/get_all_monsters');
         if (!response.ok) throw new Error('Failed to load monsters');
-        
+
         const data = await response.json();
         select.innerHTML = '<option disabled selected>Selecione um monstro...</option>';
 
@@ -273,12 +243,10 @@
         });
 
       } catch (error) {
-        console.error('Initialization error:', error);
         select.innerHTML = '<option disabled selected>Erro ao carregar monstros</option>';
         monsterImage.src = `${IMAGES_BASE_PATH}default.jpg`;
       }
     });
-
 
     function getClasse(valor) {
       if (valor === 1) return 'acerto';
@@ -299,34 +267,25 @@
 
       try {
         attempts++;
-        
-        // Calculate new blur amount (reduces by 4px each attempt)
         const blurAmount = Math.max(0, 20 - (attempts * 4));
         monsterImage.style.filter = `blur(${blurAmount}px)`;
 
-        // Get selected monster data
         const charResponse = await fetch(`http://localhost:8080/get_one_monster?id=${selectedId}`);
         const checkResponse = await fetch(`http://localhost:8080/get_monster?id=${selectedId}`);
-        
-        if (!charResponse.ok || !checkResponse.ok) {
-          throw new Error('Failed to get monster data');
-        }
+
+        if (!charResponse.ok || !checkResponse.ok) throw new Error('Failed to get monster data');
 
         const charData = await charResponse.json();
         const resultData = await checkResponse.json();
 
-        // Add result to list
         const div = document.createElement('div');
         div.className = getClasse(resultData.monstro);
         div.textContent = charData.nome;
         resultsContainer.insertBefore(div, resultsContainer.firstChild);
         resultsContainer.scrollTo(0, 0);
 
-        // If correct guess, remove blur completely
         if (resultData.monstro === 1) {
           monsterImage.style.filter = 'blur(0)';
-          
-          // Optional: Add celebration effect
           monsterImage.style.boxShadow = '0 0 30px gold';
           setTimeout(() => {
             monsterImage.style.boxShadow = '0 0 20px rgba(126, 44, 184, 0.7)';
@@ -334,11 +293,9 @@
         }
 
       } catch (error) {
-        console.error('Attempt error:', error);
         alert('Erro ao tentar verificar monstro');
       }
     }
   </script>
 </body>
-
 </html>
