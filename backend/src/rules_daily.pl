@@ -65,7 +65,7 @@ get_all(List):-
 get_all_monsters(List):-
     findall(
         _{id: Id, nome: Nome},
-        personagem(Id, Nome),
+        monstro(Id, Nome, _),
         List
     ).
 
