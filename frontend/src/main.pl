@@ -1,12 +1,17 @@
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_open)).
-
+:- use_module(classic).
+:- use_module(quote).
 :- http_handler(root(.), serve_html, []).
 
-% Função que serve o arquivo HTML
-serve_html(Request) :-
-    File = 'ordle/index.html', 
+:- http_handler(root(.), serve_html, []).
+:- http_handler(root(classico), serve_classico, []).
+:- http_handler(root(quote), serve_frase, []).
+:- initialization(start_server).
+
+serve_html(_Request) :-
+    File = 'index.html', 
     catch(
         open(File, read, Stream),
         _,
@@ -20,3 +25,4 @@ serve_html(Request) :-
 
 start_server :-
     http_server([port(8000)]).
+

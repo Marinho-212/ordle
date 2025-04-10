@@ -1,3 +1,4 @@
+
 :- use_module(rules_daily, [get_all/1, get_one/2]).
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
@@ -14,7 +15,7 @@
 :- http_handler(root(get_monster), get_monster_handler, [method(get), cors([])]).
 :- http_handler(root(get_all), get_all_handler, [method(get), cors([])]).
 :- http_handler(root(get_one), get_one_handler, [method(get), cors([])]).
-
+:- http_handler(root(get_correct), get_correct_handler, [method(get), cors([])]).
 
 get_classic_handler(Request) :-
     cors_enable,
@@ -29,7 +30,7 @@ get_monster_handler(Request) :-
 
 get_quote_handler(Request) :-
     http_parameters(Request, [id(ID, [integer])]),
-    check_quote(ID, Dic),
+    check_falas(ID, _, Dic),
     reply_json(Dic).
 
 get_emojis_handler(Request) :-
@@ -45,6 +46,13 @@ get_one_handler(Request):-
     http_parameters(Request, [id(ID, [integer])]),
     get_one(ID,Dic),
     reply_json(Dic).
+
+get_correct_handler(Request) :-
+   % http_parameters(Request, [id(ID, [integer])]),
+    daily_entity(ID, "quote"),
+    personagem(ID,_,_,_,_,_,_,_,_,_,_,Quote),
+    reply_json(_{quote: Quote}).
+
 
 start_server :-
     http_server([port(8080)]).

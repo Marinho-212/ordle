@@ -25,7 +25,7 @@ initializate_entitys :-
     (black_list(_, "quote")   -> true ; assert_black_list([], "quote")),
     (black_list(_, "emojis")   -> true ; assert_black_list([], "emojis")),
     (black_list(_, "monster") -> true ; assert_black_list([], "monster")),
+    get_emojis,
     get_classic,
     get_quote,
-    get_emojis,
     get_monster,!.

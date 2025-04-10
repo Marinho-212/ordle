@@ -74,6 +74,13 @@
       margin: 0;
     }
 
+    #correct-quote {
+      font-style: italic;
+      font-size: 24px;
+      margin: 10px 0;
+      max-width: 700px;
+    }
+
     .search-bar {
       width: 100%;
       display: flex;
@@ -117,90 +124,92 @@
     .erro {
       background-color: red;
     }
-
   </style>
 </head>
 
 <body>
-    <div class="overlay"></div>
-  
-    <div class="container">
-      <h1>Ordle</h1>
-  
-      <div class="search-bar">
-        <select id="character-select">
-          <option disabled selected>Carregando personagens...</option>
-        </select>
-        <button onclick="tentar()">Tentar</button>
-      </div>
-    </div>
-  
-    <script>
-      document.addEventListener('DOMContentLoaded', async () => {
-        const select = document.getElementById('character-select');
-        try {
-          const response = await fetch('http://localhost:8080/get_all');
-          if (!response.ok) throw new Error('Erro ao buscar personagens');
-  
-          const data = await response.json();
-          select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
-  
-          data.forEach(personagem => {
-            const option = document.createElement('option');
-            option.value = personagem.id;
-            option.textContent = personagem.nome;
-            select.appendChild(option);
-          });
-        } catch (error) {
-          console.error(error);
-          select.innerHTML = '<option disabled selected>Erro ao carregar personagens</option>';
-        }
-      });
-  
-      function getClasse(valor) {
-        if (valor === 1) return 'acerto';
-        if (valor === -1) return 'erro';
-      }
-  
-      async function tentar() {
-        const select = document.getElementById('character-select');
-        const selectedId = select.value;
-  
-        if (!selectedId) {
-          alert('Por favor, selecione um personagem!');
-          return;
-        }
-  
-        try {
-          const charResponse = await fetch(`http://localhost:8080/get_one?id=${selectedId}`);
-          const checkResponse = await fetch(`http://localhost:8080/get_classic?id=${selectedId}`);
-          if (!charResponse.ok || !checkResponse.ok) throw new Error('Erro ao buscar dados');
-  
-          const charData = await charResponse.json();
-          const resultData = await checkResponse.json();
-          
-          <!--
-          const grid = document.getElementById('grid');
-  
-          const valores = [
-            { valor: charData.nome, classe: getClasse(resultData.name) },
+  <div class="overlay"></div>
 
-          ];
-  
-          valores.forEach(item => {
-            const div = document.createElement('div');
-            div.className = `grid-item ${item.classe}`;
-            div.textContent = item.valor;
-            grid.appendChild(div);
-          }); 
-          -->
-  
-        } catch (error) {
-          console.error(error);
-          alert('Erro ao tentar verificar personagem');
-        }
+  <div class="container">
+    <h1>Ordle</h1>
+    <p id="correct-quote">Carregando fala correta...</p>
+
+    <div class="search-bar">
+      <select id="character-select">
+        <option disabled selected>Carregando personagens...</option>
+      </select>
+      <button onclick="tentar()">Tentar</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const select = document.getElementById('character-select');
+      const quoteElement = document.getElementById('correct-quote');
+
+      try {
+        // Pega a fala correta
+        const correct_quote_res = await fetch('http://localhost:8080/get_correct');
+        if (!correct_quote_res.ok) throw new Error('Erro ao buscar personagem correto');
+        const correctData = await correct_quote_res.json();
+        quoteElement.textContent = `"${correctData.quote}"`;
+
+        // Pega todos os personagens
+        const response = await fetch('http://localhost:8080/get_all');
+        if (!response.ok) throw new Error('Erro ao buscar personagens');
+
+        const data = await response.json();
+        select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
+
+        data.forEach(personagem => {
+          const option = document.createElement('option');
+          option.value = personagem.id;
+          option.textContent = personagem.nome;
+          select.appendChild(option);
+        });
+
+      } catch (error) {
+        console.error(error);
+        select.innerHTML = '<option disabled selected>Erro ao carregar personagens</option>';
+        quoteElement.textContent = 'Erro ao carregar fala correta.';
       }
-    </script>
-  </body>
-  
-  </html>
+    });
+
+    function getClasse(valor) {
+      if (valor === 1) return 'acerto';
+      if (valor === -1) return 'erro';
+    }
+
+    async function tentar() {
+      const select = document.getElementById('character-select');
+      const selectedId = select.value;
+
+      if (!selectedId) {
+        alert('Por favor, selecione um personagem!');
+        return;
+      }
+
+      try {
+        const charResponse = await fetch(`http://localhost:8080/get_one?id=${selectedId}`);
+        const checkResponse = await fetch(`http://localhost:8080/get_quote?id=${selectedId}`);
+        if (!charResponse.ok || !checkResponse.ok) throw new Error('Erro ao buscar dados');
+
+        const charData = await charResponse.json();
+        const resultData = await checkResponse.json();
+
+        const container = document.querySelector('.container');
+
+        const div = document.createElement('div');
+        div.className = getClasse(resultData.fala);
+        div.textContent = charData.nome;
+        container.appendChild(div);
+
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao tentar verificar personagem');
+      }
+    }
+  </script>
+</body>
+
+</html>

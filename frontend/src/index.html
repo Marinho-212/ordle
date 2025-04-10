@@ -1,99 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ordle</title>
     <style>
-        @font-face {
-    font-family: 'a';
-    src: url('./fonts/RomanNewTimes.woff2') format('woff2'),
-         url('./fonts/RomanNewTimes.woff') format('woff');
-}
+      @font-face {
+        font-family: "a";
+        src: url("./fonts/RomanNewTimes.woff2") format("woff2"),
+          url("./fonts/RomanNewTimes.woff") format("woff");
+      }
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: black;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: black;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://blog.jamboeditora.com.br/wp-content/uploads/2023/05/guerra-coliseu-4.jpg');
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-        }
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("https://blog.jamboeditora.com.br/wp-content/uploads/2023/05/guerra-coliseu-4.jpg");
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+      }
 
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #3a1445 0%, #201b2271 36%, #000000 91%);
-            opacity: 0.75;
-            z-index: 2;
-        }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          #3a1445 0%,
+          #201b2271 36%,
+          #000000 91%
+        );
+        opacity: 0.75;
+        z-index: 2;
+      }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            text-align: center;
-            z-index: 3;
-            position: relative;
-        }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        z-index: 3;
+        position: relative;
+      }
 
-        button {
-            font-family: 'a',cursive; 
-            background-color: #3a1445;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            font-size: 32px;
-            cursor: pointer;
-            margin: 10px 0;
-            border-radius: 10px;
-            min-height: auto;
-            height: auto;
-        }
+      button {
+        font-family: "a", cursive;
+        background-color: #3a1445;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        font-size: 32px;
+        cursor: pointer;
+        margin: 10px 0;
+        border-radius: 10px;
+        min-height: auto;
+        height: auto;
+      }
 
-        button:hover {
-            background-color: #201b22;
-        }
+      button:hover {
+        background-color: #201b22;
+      }
     </style>
-    <script>console.log("oi");</script>
-</head>
+    <!-- <script>
+      console.log("oi");
+    </script> -->
+  </head>
 
-<body>
+  <body>
     <div class="overlay"></div>
-    
+
     <div class="container">
-        <p style="font-family: 'a'; font-size: 70px; margin-bottom: 0px;">
-            Ordle
-        </p>
-        <!-- Botões -->
-        <button>Classico</button>
-        <button>Frase</button>
-        <button>Emoji</button>
-        <button>Monstro</button>
+      <p style="font-family: 'a'; font-size: 70px; margin-bottom: 0px">Ordle</p>
+    <button onclick="window.location.href='/classico'">Classico</button>
+      <button onclick="window.location.href='/quote'">Frase</button>
+      <button>Emoji</button>
+      <button>Monstro</button>
     </div>
-</body>
-
-
+  </body>
 </html>
