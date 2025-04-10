@@ -27,7 +27,7 @@
       background-color: black;
       color: white;
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
       font-family: 'a', cursive;
       font-size: 20px;
     }
@@ -60,14 +60,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 30px;
       text-align: center;
       z-index: 3;
       position: relative;
-      margin-top: 30px;
+      margin-top: 50px;
       width: 90%;
       max-width: 800px;
-      height: 90vh;
     }
 
     h1 {
@@ -80,13 +79,6 @@
       font-size: 24px;
       margin: 10px 0;
       max-width: 700px;
-      padding: 20px;
-      background-color: rgba(74, 0, 114, 0.7);
-      border-radius: 10px;
-      border: 2px solid #7e2cb8;
-      box-shadow: 0 0 15px rgba(126, 44, 184, 0.5);
-      margin-top: -10px;
-      margin-bottom: 20px;
     }
 
     .search-bar {
@@ -96,7 +88,6 @@
       flex-direction: column;
       align-items: center;
       gap: 15px;
-      margin-bottom: 15px;
     }
 
     select {
@@ -126,60 +117,12 @@
       background-color: #7e2cb8;
     }
 
-    .results-container {
-      width: 100%;
-      max-width: 500px;
-      max-height: 50vh;
-      overflow-y: auto;
-      padding: 5px;
-      scrollbar-width: thin;
-      scrollbar-color: #7e2cb8 #3a1445;
-    }
-
-    .results-container::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .results-container::-webkit-scrollbar-track {
-      background: #3a1445;
-      border-radius: 10px;
-    }
-
-    .results-container::-webkit-scrollbar-thumb {
-      background-color: #7e2cb8;
-      border-radius: 10px;
-    }
-
     .acerto {
-      background-color: #2e7d32; 
-      color: white;
-      padding: 8px 15px;
-      border-radius: 8px;
-      font-size: 20px;
-      margin: 5px 0;
-      width: 100%;
-      max-width: 100%;
-      text-align: center;
-      display: block;
-      box-sizing: border-box;
-      border: 2px solid #1b5e20;
-      box-shadow: 0 0 8px rgba(46, 125, 50, 0.5);
+      background-color: green;
     }
 
     .erro {
-      background-color: #c62828; 
-      color: white;
-      padding: 8px 15px;
-      border-radius: 8px;
-      font-size: 20px;
-      margin: 5px 0;
-      width: 100%;
-      max-width: 100%;
-      text-align: center;
-      display: block;
-      box-sizing: border-box;
-      border: 2px solid #b71c1c;
-      box-shadow: 0 0 8px rgba(198, 40, 40, 0.5);
+      background-color: red;
     }
   </style>
 </head>
@@ -197,27 +140,42 @@
       </select>
       <button onclick="tentar()">Tentar</button>
     </div>
-
-    <div class="results-container" id="results-container"></div>
   </div>
 
   <script>
+    let tentativas = 0;
+    let correctEmoji = '';
+
+    function splitUnicodeSymbols(str) {
+      return [...str];
+    }
+
+    function revealEmojisPorTentativa(element, emojiStr, tentativas) {
+      const emojis = splitUnicodeSymbols(emojiStr);
+      const visiveis = emojis.slice(0, tentativas);
+      element.textContent = visiveis.join('');
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       const select = document.getElementById('character-select');
       const quoteElement = document.getElementById('correct-quote');
 
       try {
-        const correct_quote_res = await fetch('http://localhost:8080/get_correct');
-        if (!correct_quote_res.ok) throw new Error('Erro ao buscar personagem correto');
-        const correctData = await correct_quote_res.json();
-        quoteElement.textContent = `"${correctData.quote}"`;
+        const correct_emoji_res = await fetch('http://localhost:8080/get_correct_emoji');
+        if (!correct_emoji_res.ok) throw new Error('Erro ao buscar emoji');
+        const correctEmojiData = await correct_emoji_res.json();
+        correctEmoji = correctEmojiData.emoji;
+
+
+        tentativas = 1;
+        revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
+
 
         const response = await fetch('http://localhost:8080/get_all');
         if (!response.ok) throw new Error('Erro ao buscar personagens');
 
         const data = await response.json();
         select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
-
         data.forEach(personagem => {
           const option = document.createElement('option');
           option.value = personagem.id;
@@ -240,7 +198,6 @@
     async function tentar() {
       const select = document.getElementById('character-select');
       const selectedId = select.value;
-      const resultsContainer = document.getElementById('results-container');
 
       if (!selectedId) {
         alert('Por favor, selecione um personagem!');
@@ -249,19 +206,21 @@
 
       try {
         const charResponse = await fetch(`http://localhost:8080/get_one?id=${selectedId}`);
-        const checkResponse = await fetch(`http://localhost:8080/get_quote?id=${selectedId}`);
+        const checkResponse = await fetch(`http://localhost:8080/get_emojis?id=${selectedId}`);
         if (!charResponse.ok || !checkResponse.ok) throw new Error('Erro ao buscar dados');
 
         const charData = await charResponse.json();
         const resultData = await checkResponse.json();
 
+        const container = document.querySelector('.container');
         const div = document.createElement('div');
-        div.className = getClasse(resultData.fala);
+        div.className = getClasse(resultData.emoji);
         div.textContent = charData.nome;
-        
-        resultsContainer.insertBefore(div, resultsContainer.firstChild);
+        container.appendChild(div);
 
-        resultsContainer.scrollTo(0, 0);
+        tentativas++;
+        const quoteElement = document.getElementById('correct-quote');
+        revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
 
       } catch (error) {
         console.error(error);

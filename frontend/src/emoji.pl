@@ -1,0 +1,19 @@
+:- module(emoji, [serve_emoji/1]).
+:- use_module(library(http/http_server)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_open)).
+:- http_handler(root(.), serve_html, []).
+:- http_handler(root(emoji), serve_emoji, []).
+%
+serve_emoji(_Request) :-
+        File = 'emoji.html', 
+        catch(
+            open(File, read, Stream),
+            _,
+            (   format('Content-type: text/plain~n~n'),
+                format('Erro ao carregar o arquivo HTML.~n')
+            )
+        ),
+        format('Content-type: text/html~n~n'),
+        copy_stream_data(Stream, current_output),
+        close(Stream).

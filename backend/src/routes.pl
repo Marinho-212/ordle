@@ -14,6 +14,7 @@
 :- http_handler(root(get_all), get_all_handler, [method(get), cors]).
 :- http_handler(root(get_one), get_one_handler, [method(get), cors]).
 :- http_handler(root(get_correct), get_correct_handler, [method(get), cors]).
+:- http_handler(root(get_correct_emoji), get_correct_emoji_handler, [method(get), cors]).
 :- http_handler(root(.), root_handler, [method(get), cors]).
 :- http_handler(root(.), handle_options, [method(options), prefix]).
 
@@ -66,3 +67,9 @@ get_correct_handler(_Request) :-
     daily_entity(ID, "quote"),
     personagem(ID,_,_,_,_,_,_,_,_,_,_,Quote),
     reply_json(_{quote: Quote}).
+
+get_correct_emoji_handler(_Request) :-
+    cors_enable,
+    daily_entity(ID, "emojis"),
+    personagem(ID,_,_,_,_,_,_,_,_,Emojis,_,_),
+    reply_json(_{emoji: Emojis}).
