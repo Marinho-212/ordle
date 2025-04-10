@@ -15,7 +15,8 @@
 :- http_handler(root(get_monster), get_monster_handler, [method(get), cors([])]).
 :- http_handler(root(get_all), get_all_handler, [method(get), cors([])]).
 :- http_handler(root(get_one), get_one_handler, [method(get), cors([])]).
-:- http_handler(root(get_correct), get_correct_handler, [method(get), cors([])]).
+:- http_handler(root(get_correct_quote), get_correct_quote_handler, [method(get), cors([])]).
+:- http_handler(root(get_correct_emoji), get_correct_emoji_handler, [method(get), cors([])]).
 
 get_classic_handler(Request) :-
     cors_enable,
@@ -35,7 +36,7 @@ get_quote_handler(Request) :-
 
 get_emojis_handler(Request) :-
     http_parameters(Request, [id(ID, [integer])]),
-    check_emojis(ID, Dic),
+    check_emojis(ID,_, Dic),
     reply_json(Dic).
 
 get_all_handler(_Request):-
@@ -47,11 +48,19 @@ get_one_handler(Request):-
     get_one(ID,Dic),
     reply_json(Dic).
 
-get_correct_handler(Request) :-
+get_correct_quote_handler(Request) :-
    % http_parameters(Request, [id(ID, [integer])]),
     daily_entity(ID, "quote"),
     personagem(ID,_,_,_,_,_,_,_,_,_,_,Quote),
     reply_json(_{quote: Quote}).
+
+get_correct_emoji_handler(Request) :-
+    % http_parameters(Request, [id(ID, [integer])]),
+    daily_entity(ID, "emojis"),
+    personagem(ID,_,_,_,_,_,_,_,_,Emojis,_,_),
+    reply_json(_{emoji: Emojis}).
+
+
 
 
 start_server :-

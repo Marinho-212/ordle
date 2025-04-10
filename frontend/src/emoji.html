@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR" spellcheck="false">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ordle</title>
+  <style>
+    @font-face {
+      font-family: 'a';
+      src: url('./fonts/RomanNewTimes.woff2') format('woff2'),
+        url('./fonts/RomanNewTimes.woff') format('woff');
+    }
+
+    * {
+      font-weight: bold;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      background-color: black;
+      color: white;
+      position: relative;
+      overflow-y: auto;
+      font-family: 'a', cursive;
+      font-size: 20px;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://blog.jamboeditora.com.br/wp-content/uploads/2023/05/guerra-coliseu-4.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #3a1445 0%, #201b2271 36%, #000000 91%);
+      opacity: 0.75;
+      z-index: 2;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      text-align: center;
+      z-index: 3;
+      position: relative;
+      margin-top: 50px;
+      width: 90%;
+      max-width: 800px;
+    }
+
+    h1 {
+      font-size: 64px;
+      margin: 0;
+    }
+
+    #correct-quote {
+      font-style: italic;
+      font-size: 24px;
+      margin: 10px 0;
+      max-width: 700px;
+    }
+
+    .search-bar {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    select {
+      width: 100%;
+      max-width: 500px;
+      padding: 15px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-family: 'a';
+    }
+
+    button {
+      padding: 5px 10px;
+      font-size: 37px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: #4a0072;
+      color: white;
+      font-family: 'a';
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #7e2cb8;
+    }
+
+    .acerto {
+      background-color: green;
+    }
+
+    .erro {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="container">
+    <h1>Ordle</h1>
+    <p id="correct-quote">Carregando fala correta...</p>
+
+    <div class="search-bar">
+      <select id="character-select">
+        <option disabled selected>Carregando personagens...</option>
+      </select>
+      <button onclick="tentar()">Tentar</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const select = document.getElementById('character-select');
+      const quoteElement = document.getElementById('correct-quote');
+
+      try {
+     
+        const correct_emoji_res = await fetch('http://localhost:8080/get_correct_emoji');
+        if (!correct_emoji_res.ok) throw new Error('Erro ao buscar fala em emoji');
+        const correctEmojiData = await correct_emoji_res.json();
+        quoteElement.textContent = correctEmojiData.emoji;
+
+
+        const response = await fetch('http://localhost:8080/get_all');
+        if (!response.ok) throw new Error('Erro ao buscar personagens');
+
+        const data = await response.json();
+        select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
+
+        data.forEach(personagem => {
+          const option = document.createElement('option');
+          option.value = personagem.id;
+          option.textContent = personagem.nome;
+          select.appendChild(option);
+        });
+
+      } catch (error) {
+        console.error(error);
+        select.innerHTML = '<option disabled selected>Erro ao carregar personagens</option>';
+        quoteElement.textContent = 'Erro ao carregar fala correta.';
+      }
+    });
+
+    function getClasse(valor) {
+      if (valor === 1) return 'acerto';
+      if (valor === -1) return 'erro';
+    }
+
+    async function tentar() {
+      const select = document.getElementById('character-select');
+      const selectedId = select.value;
+
+      if (!selectedId) {
+        alert('Por favor, selecione um personagem!');
+        return;
+      }
+
+      try {
+        const charResponse = await fetch(`http://localhost:8080/get_one?id=${selectedId}`);
+        const checkResponse = await fetch(`http://localhost:8080/get_emojis?id=${selectedId}`);
+        if (!charResponse.ok || !checkResponse.ok) throw new Error('Erro ao buscar dados');
+
+        const charData = await charResponse.json();
+        const resultData = await checkResponse.json();
+
+        const container = document.querySelector('.container');
+
+        const div = document.createElement('div');
+        div.className = getClasse(resultData.emoji);
+        div.textContent = charData.nome;
+        container.appendChild(div);
+
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao tentar verificar personagem');
+      }
+    }
+  </script>
+</body>
+
+</html>

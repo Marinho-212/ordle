@@ -3,11 +3,12 @@
 :- use_module(library(http/http_open)).
 :- use_module(classic).
 :- use_module(quote).
+:- use_module(emoji).
 :- http_handler(root(.), serve_html, []).
 
-:- http_handler(root(.), serve_html, []).
 :- http_handler(root(classico), serve_classico, []).
 :- http_handler(root(quote), serve_frase, []).
+:- http_handler(root(emoji), serve_emoji, []).
 :- initialization(start_server).
 
 serve_html(_Request) :-
