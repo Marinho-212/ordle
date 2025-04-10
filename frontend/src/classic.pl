@@ -1,4 +1,3 @@
-
 :- module(classic, [serve_classico/1]).
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
