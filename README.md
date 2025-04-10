@@ -1,6 +1,6 @@
 # Ordle
 
-Ordle é um jogo de adivinhação baseado na série **Ordem Paranormal**, com desafios diários onde o jogador deve descobrir o personagem ou monstro oculto. O projeto conta com duas versões:
+Ordle é um jogo de adivinhação baseado na série **Ordem Paranormal**, com desafios diários onde o jogador deve descobrir o personagem ou monstro oculto.
 
 ---
 
