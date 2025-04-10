@@ -1,4 +1,4 @@
-:- use_module(rules_daily, [get_all/1, get_one/2]).
+:- use_module(rules_daily, [get_all/1, get_one/2, get_all_monsters/1, get_one_monster/2]).
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
@@ -12,7 +12,9 @@
 :- http_handler(root(get_emojis), get_emojis_handler, [method(get), cors]).
 :- http_handler(root(get_monster), get_monster_handler, [method(get), cors]).
 :- http_handler(root(get_all), get_all_handler, [method(get), cors]).
+:- http_handler(root(get_all_monsters), get_all_monsters_handler, [method(get), cors]).
 :- http_handler(root(get_one), get_one_handler, [method(get), cors]).
+:- http_handler(root(get_one_monster), get_one_monster_handler, [method(get), cors]).
 :- http_handler(root(get_correct), get_correct_handler, [method(get), cors]).
 :- http_handler(root(get_correct_emoji), get_correct_emoji_handler, [method(get), cors]).
 :- http_handler(root(.), root_handler, [method(get), cors]).
@@ -36,7 +38,7 @@ get_classic_handler(Request) :-
 get_monster_handler(Request) :-
     cors_enable,
     http_parameters(Request, [id(ID, [integer])]),
-    check_monster(ID, Dic),
+    check_monster(ID, _,Dic),
     reply_json(Dic).
 
 get_quote_handler(Request) :-
@@ -56,10 +58,21 @@ get_all_handler(_Request):-
     get_all(List),
     reply_json(List).
 
+get_all_monsters_handler(_Request):-
+    cors_enable,
+    get_all(List),
+    reply_json(List).
+
 get_one_handler(Request):-
     cors_enable,
     http_parameters(Request, [id(ID, [integer])]),
     get_one(ID,Dic),
+    reply_json(Dic).
+
+get_one_monster_handler(Request):-
+    cors_enable,
+    http_parameters(Request, [id(ID, [integer])]),
+    get_one_monster(ID,Dic),
     reply_json(Dic).
 
 get_correct_handler(_Request) :-

@@ -75,7 +75,7 @@
       margin: 0;
     }
 
-    #correct-emoji {
+    #correct-monster {
       font-style: italic;
       font-size: 24px;
       margin: 10px 0;
@@ -87,6 +87,14 @@
       box-shadow: 0 0 15px rgba(126, 44, 184, 0.5);
       margin-top: -10px;
       margin-bottom: 20px;
+    }
+
+    .monster-image {
+      max-width: 300px;
+      max-height: 300px;
+      border-radius: 10px;
+      border: 2px solid #7e2cb8;
+      margin: 10px 0;
     }
 
     .search-bar {
@@ -189,11 +197,14 @@
 
   <div class="container">
     <h1>Ordle</h1>
-    <p id="correct-emoji">Carregando emojis...</p>
+    <div id="correct-monster">
+      <p>Carregando monstro correto...</p>
+      <img id="monster-img" class="monster-image" src="" alt="Monstro do dia" style="display: none;">
+    </div>
 
     <div class="search-bar">
-      <select id="character-select">
-        <option disabled selected>Carregando personagens...</option>
+      <select id="monster-select">
+        <option disabled selected>Carregando monstros...</option>
       </select>
       <button onclick="tentar()">Tentar</button>
     </div>
@@ -202,90 +213,93 @@
   </div>
 
   <script>
-    let tentativas = 0;
-    let correctEmoji = '';
-
-    function splitUnicodeSymbols(str) {
-      return [...str];
-    }
-
-    function revealEmojisPorTentativa(element, emojiStr, tentativas) {
-      const emojis = splitUnicodeSymbols(emojiStr);
-      const visiveis = emojis.slice(0, tentativas);
-      element.textContent = visiveis.join('');
-    }
+    let correctMonsterId = null;
+    let correctMonsterName = null;
+    let correctMonsterImage = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const select = document.getElementById('character-select');
-      const emojiElement = document.getElementById('correct-emoji');
+      const select = document.getElementById('monster-select');
+      const monsterElement = document.getElementById('correct-monster');
+      const monsterImg = document.getElementById('monster-img');
       const resultsContainer = document.getElementById('results-container');
 
       try {
-        const correct_emoji_res = await fetch('http://localhost:8080/get_correct_emoji');
-        if (!correct_emoji_res.ok) throw new Error('Erro ao buscar emoji');
-        const correctEmojiData = await correct_emoji_res.json();
-        correctEmoji = correctEmojiData.emoji;
-
-        tentativas = 1;
-        revealEmojisPorTentativa(emojiElement, correctEmoji, tentativas);
-
-        const response = await fetch('http://localhost:8080/get_all');
-        if (!response.ok) throw new Error('Erro ao buscar personagens');
+        // Carrega o monstro correto do dia
+        const dailyResponse = await fetch('http://localhost:8080/get_monster');
+        if (!dailyResponse.ok) throw new Error('Erro ao buscar monstro do dia');
+        
+        const dailyData = await dailyResponse.json();
+        correctMonsterId = dailyData.id;
+        correctMonsterName = dailyData.nome;
+        correctMonsterImage = dailyData.image; // Assumindo que a API retorna a URL da imagem
+        
+        // Atualiza a exibição do monstro (mas não mostra ainda)
+        monsterElement.innerHTML = `<p>Adivinhe o monstro do dia!</p>`;
+        monsterImg.src = correctMonsterImage;
+        
+        // Carrega a lista de monstros para o select
+        const response = await fetch('http://localhost:8080/get_all_monsters');
+        if (!response.ok) throw new Error('Erro ao buscar monstros');
 
         const data = await response.json();
-        select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
-        data.forEach(personagem => {
+        select.innerHTML = '<option disabled selected>Selecione um monstro...</option>';
+        
+        data.forEach(monstro => {
           const option = document.createElement('option');
-          option.value = personagem.id;
-          option.textContent = personagem.nome;
+          option.value = monstro.id;
+          option.textContent = monstro.nome;
           select.appendChild(option);
         });
 
       } catch (error) {
         console.error(error);
-        select.innerHTML = '<option disabled selected>Erro ao carregar personagens</option>';
-        emojiElement.textContent = 'Erro ao carregar fala correta.';
+        select.innerHTML = '<option disabled selected>Erro ao carregar monstros</option>';
+        monsterElement.innerHTML = '<p>Erro ao carregar monstro do dia</p>';
       }
     });
 
-    function getClasse(valor) {
-      if (valor === 1) return 'acerto';
-      if (valor === -1) return 'erro';
+    function getClasse(isCorrect) {
+      return isCorrect ? 'acerto' : 'erro';
     }
 
     async function tentar() {
-      const select = document.getElementById('character-select');
-      const selectedId = select.value;
+      const select = document.getElementById('monster-select');
+      const selectedId = parseInt(select.value);
       const resultsContainer = document.getElementById('results-container');
-      const emojiElement = document.getElementById('correct-emoji');
+      const monsterImg = document.getElementById('monster-img');
 
       if (!selectedId) {
-        alert('Por favor, selecione um personagem!');
+        alert('Por favor, selecione um monstro!');
         return;
       }
 
       try {
-        const charResponse = await fetch(`http://localhost:8080/get_one?id=${selectedId}`);
-        const checkResponse = await fetch(`http://localhost:8080/get_emojis?id=${selectedId}`);
-        if (!charResponse.ok || !checkResponse.ok) throw new Error('Erro ao buscar dados');
+        // Busca os dados do monstro selecionado
+        const monsterResponse = await fetch(`http://localhost:8080/get_one_monster?id=${selectedId}`);
+        if (!monsterResponse.ok) throw new Error('Erro ao buscar dados do monstro');
 
-        const charData = await charResponse.json();
-        const resultData = await checkResponse.json();
+        const monsterData = await monsterResponse.json();
+        const isCorrect = selectedId === correctMonsterId;
 
+        // Cria o elemento de resultado
         const div = document.createElement('div');
-        div.className = getClasse(resultData.emoji);
-        div.textContent = charData.nome;
+        div.className = getClasse(isCorrect);
+        div.textContent = monsterData.nome;
         
         resultsContainer.insertBefore(div, resultsContainer.firstChild);
-
         resultsContainer.scrollTo(0, 0);
 
-        tentativas++;
-        revealEmojisPorTentativa(emojiElement, correctEmoji, tentativas);
+        // Se acertou, mostra a imagem do monstro
+        if (isCorrect) {
+          monsterImg.style.display = 'block';
+          document.querySelector('#correct-monster p').textContent = `Correto! O monstro do dia é ${correctMonsterName}`;
+          select.disabled = true;
+          document.querySelector('button').disabled = true;
+        }
 
       } catch (error) {
         console.error(error);
-        alert('Erro ao tentar verificar personagem');
+        alert('Erro ao tentar verificar monstro');
       }
     }
   </script>

@@ -31,11 +31,18 @@ check_classico_age(IdDay, IdTry, Saida) :-
 check_classico_association(IdDay,IdTry, Saida):-
     personagem(IdDay,_,_,_,AssociationDay,_,_,_,_,_,_,_),
     personagem(IdTry,_,_,_,AssociationTry,_,_,_,_,_,_,_),
-    split_string(AssociationDay, ",", "", ListaDay),
-    split_string(AssociationTry, ",", "", ListaTry),
+    split_string(AssociationDay, ",", "", ListaDayRaw),
+    split_string(AssociationTry, ",", "", ListaTryRaw),
+    maplist(remove_spaces_string, ListaDayRaw, ListaDay),
+    maplist(remove_spaces_string, ListaTryRaw, ListaTry),
     sort(ListaDay, SortedDay),
     sort(ListaTry, SortedTry),
     verifica(SortedDay,SortedTry,Saida).
+
+remove_spaces_string(String, Clean) :-
+    string_chars(String, Chars),
+    exclude(=( ' '), Chars, CleanChars),
+    string_chars(Clean, CleanChars).
 
 verifica(List1, List2, Result) :-
     (List1 = List2 -> Result = 1;  
@@ -68,8 +75,10 @@ check_classico_fstap(IdDay,IdTry,Saida):-
 check_classico_actor(IdDay,IdTry, Saida):-
     personagem(IdDay,_,_,_,_,_,ActorDay,_,_,_,_,_),
     personagem(IdTry,_,_,_,_,_,ActorTry,_,_,_,_,_),
-    split_string(ActorDay, ",", "", ListaDay),
-    split_string(ActorTry, ",", "", ListaTry),
+    split_string(ActorDay, ",", "", ListaDayRaw),
+    split_string(ActorTry, ",", "", ListaTryRaw),
+    maplist(remove_spaces_string, ListaDayRaw, ListaDay),
+    maplist(remove_spaces_string, ListaTryRaw, ListaTry),
     sort(ListaDay, SortedDay),
     sort(ListaTry, SortedTry),
     verifica(SortedDay,SortedTry,Saida).
@@ -86,7 +95,7 @@ check_classico_gender(IdDay,IdTry,Saida):-
     GenderDay = GenderTry -> Saida = 1;
     Saida = -1.
 
-check_monstro(IdTry,Saida,Dic):-
+check_monster(IdTry,Saida,Dic):-
     daily_entity(IdDay,"monster"),
     (IdDay = IdTry -> Saida = 1;
     Saida = -1),

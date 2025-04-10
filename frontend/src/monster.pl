@@ -1,10 +1,10 @@
-:- module(quote, [serve_frase/1]).
+:- module(monster, [serve_monster/1]).
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_open)).
 
-serve_frase(_Request) :-
-        File = 'quote.html', 
+serve_monster(_Request) :-
+        File = 'monster.html', 
         catch(
             open(File, read, Stream),
             _,
@@ -15,3 +15,4 @@ serve_frase(_Request) :-
         format('Content-type: text/html~n~n'),
         copy_stream_data(Stream, current_output),
         close(Stream).
+    

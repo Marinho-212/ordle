@@ -27,7 +27,7 @@
       background-color: black;
       color: white;
       position: relative;
-      overflow-y: auto;
+      overflow: hidden;
       font-family: 'a';
       font-size: 20px;
     }
@@ -60,14 +60,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px;
+      gap: 20px;
       text-align: center;
       z-index: 3;
       position: relative;
-      margin-top: 50px;
-      margin-bottom: 50px;
+      margin-top: 30px;
       width: 90%;
       max-width: 850px;
+      height: 90vh;
     }
 
     h1 {
@@ -82,6 +82,7 @@
       flex-direction: column;
       align-items: center;
       gap: 15px;
+      margin-bottom: 15px;
     }
 
     select {
@@ -111,58 +112,91 @@
       background-color: #7e2cb8;
     }
 
+    .grid-container {
+      width: 100%;
+      max-height: 55vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #7e2cb8 #3a1445;
+      margin-top: 10px;
+    }
+
+    .grid-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .grid-container::-webkit-scrollbar-track {
+      background: #3a1445;
+      border-radius: 10px;
+    }
+
+    .grid-container::-webkit-scrollbar-thumb {
+      background-color: #7e2cb8;
+      border-radius: 10px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 20px;
-      margin-top: 20px;
+      gap: 10px;
+      padding: 5px;
     }
 
     .grid-title {
-      font-size: 28px;
+      font-size: 22px;
       text-align: center;
+      padding: 10px;
+      position: sticky;
+      top: 0;
+      background-color: #3a1445;
+      z-index: 4;
+      border-bottom: 2px solid #7e2cb8;
     }
 
     .grid-item {
-      min-height: 50px; /* altura mínima */
-      border-radius: 10px;
+      min-height: 50px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
       color: white;
-      padding: 10px; /* adicionar algum espaço interno */
-      word-break: break-word; /* quebra palavras muito longas */
+      padding: 8px;
+      word-break: break-word;
       text-align: center;
     }
 
-
     .acerto {
-      background-color: green;
+      background-color: #2e7d32;
+      border: 2px solid #1b5e20;
     }
 
     .erro {
-      background-color: red;
+      background-color: #c62828;
+      border: 2px solid #b71c1c;
     }
 
     .erro_para_cima {
-      background-color: red;
+      background-color: #c62828;
+      border: 2px solid #b71c1c;
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="m26.71 10.29-10-10a1 1 0 0 0-1.41 0l-10 10 1.41 1.41L15 3.41V32h2V3.41l8.29 8.29z" fill="%23b11226"/></svg>');
       background-repeat: no-repeat;
       background-position: center;
-      background-size: 50%;
+      background-size: 40%;
     }
 
     .erro_para_baixo {
-      background-color: red;
+      background-color: #c62828;
+      border: 2px solid #b71c1c;
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="m5.29 21.71 10 10a1 1 0 0 0 1.41 0l10-10-1.41-1.41L17 28.59V0h-2v28.59l-8.29-8.29z" fill="%23b11226"/></svg>');
       background-repeat: no-repeat;
       background-position: center;
-      background-size: 50%;
+      background-size: 40%;
     }
 
     .parcial {
-      background-color: orange;
+      background-color: #ff8f00;
+      border: 2px solid #e65100;
     }
   </style>
 </head>
@@ -180,14 +214,16 @@
       <button onclick="tentar()">Tentar</button>
     </div>
 
-    <div class="grid" id="grid">
-      <div class="grid-title">Nome</div>
-      <div class="grid-title">Idade</div>
-      <div class="grid-title">Genero</div>
-      <div class="grid-title">Ator</div>
-      <div class="grid-title">Associacao</div>
-      <div class="grid-title">Afinidade</div>
-      <div class="grid-title">Estreia</div>
+    <div class="grid-container">
+      <div class="grid" id="grid">
+        <div class="grid-title">Nome</div>
+        <div class="grid-title">Idade</div>
+        <div class="grid-title">Genero</div>
+        <div class="grid-title">Ator</div>
+        <div class="grid-title">Associacao</div>
+        <div class="grid-title">Afinidade</div>
+        <div class="grid-title">Estreia</div>
+      </div>
     </div>
   </div>
 
@@ -224,6 +260,7 @@
     async function tentar() {
       const select = document.getElementById('character-select');
       const selectedId = select.value;
+      const grid = document.getElementById('grid');
 
       if (!selectedId) {
         alert('Por favor, selecione um personagem!');
@@ -238,8 +275,6 @@
         const charData = await charResponse.json();
         const resultData = await checkResponse.json();
 
-        const grid = document.getElementById('grid');
-
         const valores = [
           { valor: charData.nome, classe: getClasse(resultData.name) },
           { valor: charData.age, classe: getClasse(resultData.age) },
@@ -250,12 +285,16 @@
           { valor: charData.first, classe: getClasse(resultData.fstap) }
         ];
 
+        // Cria uma nova linha (um conjunto de 7 divs)
         valores.forEach(item => {
           const div = document.createElement('div');
           div.className = `grid-item ${item.classe}`;
           div.textContent = item.valor;
           grid.appendChild(div);
         });
+
+        // Rola para a nova linha adicionada
+        document.querySelector('.grid-container').scrollTo(0, grid.scrollHeight);
 
       } catch (error) {
         console.error(error);

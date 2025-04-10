@@ -5,13 +5,14 @@
 :- use_module(classic).
 :- use_module(quote).
 :- use_module(emoji).
+:- use_module(monster).
 
 :- http_handler(root(.), serve_html, []).
 :- http_handler(root(fonts), serve_files('fonts'), [prefix]).
 :- http_handler(root(classico), serve_classico, []).
 :- http_handler(root(quote), serve_frase, []).
 :- http_handler(root(emoji), serve_emoji, []).
-
+:- http_handler(root(monster), serve_monster, []).
 
 serve_html(_Request) :-
     File = 'index.html',

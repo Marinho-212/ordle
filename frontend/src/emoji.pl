@@ -2,9 +2,7 @@
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_open)).
-:- http_handler(root(.), serve_html, []).
-:- http_handler(root(emoji), serve_emoji, []).
-%
+
 serve_emoji(_Request) :-
         File = 'emoji.html', 
         catch(

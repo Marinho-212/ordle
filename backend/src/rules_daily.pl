@@ -1,4 +1,4 @@
-:- module(rules_daily, [get_mode/3, get_all/1, get_one/2]).
+:- module(rules_daily, [get_mode/3, get_all/1, get_one/2, get_all_monsters/1, get_one_monster/2]).
 :- dynamic(daily_character/12).
 :- use_module(library(random)).
 :- use_module(library(persistency)).
@@ -62,6 +62,17 @@ get_all(List):-
         List
     ).
 
+get_all_monsters(List):-
+    findall(
+        _{id: Id, nome: Nome},
+        personagem(Id, Nome),
+        List
+    ).
+
 get_one(Id,Dic):-
     personagem(Id, Nome,Idade,_,Assoc,First,Ator,Aff,Genero,Emoji,_,Quote),
     Dic = _{id: Id, nome: Nome, age: Idade, gender: Genero, actor: Ator, assoc: Assoc, aff: Aff, first: First, emoji: Emoji,quote: Quote}.
+
+get_one_monster(Id,Dic):-
+    monstro(Id,Nome,_),
+    Dic = _{id: Id, nome: Nome}.
