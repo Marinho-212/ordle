@@ -143,16 +143,32 @@
   </div>
 
   <script>
+    let tentativas = 0;
+    let correctEmoji = '';
+
+    function splitUnicodeSymbols(str) {
+      return [...str];
+    }
+
+    function revealEmojisPorTentativa(element, emojiStr, tentativas) {
+      const emojis = splitUnicodeSymbols(emojiStr);
+      const visiveis = emojis.slice(0, tentativas);
+      element.textContent = visiveis.join('');
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       const select = document.getElementById('character-select');
       const quoteElement = document.getElementById('correct-quote');
 
       try {
-     
         const correct_emoji_res = await fetch('http://localhost:8080/get_correct_emoji');
         if (!correct_emoji_res.ok) throw new Error('Erro ao buscar fala em emoji');
         const correctEmojiData = await correct_emoji_res.json();
-        quoteElement.textContent = correctEmojiData.emoji;
+        correctEmoji = correctEmojiData.emoji;
+
+
+        tentativas = 1;
+        revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
 
 
         const response = await fetch('http://localhost:8080/get_all');
@@ -160,7 +176,6 @@
 
         const data = await response.json();
         select.innerHTML = '<option disabled selected>Selecione um personagem...</option>';
-
         data.forEach(personagem => {
           const option = document.createElement('option');
           option.value = personagem.id;
@@ -198,11 +213,14 @@
         const resultData = await checkResponse.json();
 
         const container = document.querySelector('.container');
-
         const div = document.createElement('div');
         div.className = getClasse(resultData.emoji);
         div.textContent = charData.nome;
         container.appendChild(div);
+
+        tentativas++;
+        const quoteElement = document.getElementById('correct-quote');
+        revealEmojisPorTentativa(quoteElement, correctEmoji, tentativas);
 
       } catch (error) {
         console.error(error);
