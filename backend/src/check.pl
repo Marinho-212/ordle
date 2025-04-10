@@ -31,20 +31,21 @@ check_classico_age(IdDay, IdTry, Saida) :-
 check_classico_association(IdDay,IdTry, Saida):-
     personagem(IdDay,_,_,_,AssociationDay,_,_,_,_,_,_,_),
     personagem(IdTry,_,_,_,AssociationTry,_,_,_,_,_,_,_),
-    split_string(AssociationDay, ", ", "", ListaDay),
-    split_string(AssociationTry, ", ", "", ListaTry),
+    split_string(AssociationDay, ",", "", ListaDay),
+    split_string(AssociationTry, ",", "", ListaTry),
     sort(ListaDay, SortedDay),
     sort(ListaTry, SortedTry),
     verifica(SortedDay,SortedTry,Saida).
 
-verifica(List1, List2, Result):-
-    (List1 = List2 -> Result = 1;
-     (common_element(List1,List2)-> Result = 0;
-      Result = -1)).
+verifica(List1, List2, Result) :-
+    (List1 = List2 -> Result = 1;  
+     (common_element(List1, List2) -> Result = 0; 
+     Result = -1)).
 
-common_element([Head|_], List2) :- member(Head, List2), !.
-common_element([_|Tail], List2) :- common_element(Tail, List2).
-
+common_element(List1, List2) :-
+    member(Elem, List1), 
+    member(Elem, List2), !.  
+    
 fstap_comp("Iniciacao",1).
 fstap_comp("O Segredo na Floresta",2).
 fstap_comp("Desconjuracao",3).
@@ -62,13 +63,13 @@ check_classico_fstap(IdDay,IdTry,Saida):-
     fstap_comp(FstapTry,NumTry),
     Dif is NumDay - NumTry,
    ( Dif == 0 -> Saida = 1;
-    (Dif < 0 -> Saida = -10; Saida = 10)).
+    (Dif < 0 -> Saida = 10; Saida = -10)).
 
 check_classico_actor(IdDay,IdTry, Saida):-
     personagem(IdDay,_,_,_,_,_,ActorDay,_,_,_,_,_),
     personagem(IdTry,_,_,_,_,_,ActorTry,_,_,_,_,_),
-    split_string(ActorDay, ", ", "", ListaDay),
-    split_string(ActorTry, ", ", "", ListaTry),
+    split_string(ActorDay, ",", "", ListaDay),
+    split_string(ActorTry, ",", "", ListaTry),
     sort(ListaDay, SortedDay),
     sort(ListaTry, SortedTry),
     verifica(SortedDay,SortedTry,Saida).

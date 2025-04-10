@@ -3,6 +3,7 @@
 :- [check].
 :- use_module(json_to_facts, [personagem/12, monstro/3, carregar_json/4]).
 :- use_module(library(persistency)).
+:- use_module(library(http/http_cors)).
 :- [routes].
 :- initialization(main).
 
